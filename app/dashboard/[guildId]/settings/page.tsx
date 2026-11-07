@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { ErrorCard } from "@/components/ErrorCard";
+import { Icon } from "@/components/Icon";
 import { SettingsForm } from "@/components/SettingsForm";
 import { manageableGuilds } from "@/lib/access";
 import { getSession } from "@/lib/session";
@@ -32,10 +33,15 @@ export default async function Page({ params }: { params: { guildId: string } }) 
   const online = Date.now() - Date.parse(snap.updated_at) < 180000;
 
   return (
-    <div className="rise space-y-6">
-      <header>
-        <h1 className="font-display text-2xl font-semibold text-white">Server settings</h1>
-        <p className="mt-1 text-sm text-zinc-400">{data.guild.name} · changes apply to the bot within a few seconds.</p>
+    <div className="space-y-6">
+      <header className="rise flex items-center gap-4">
+        <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-300 ring-1 ring-violet-400/25 shadow-[0_0_30px_-6px_rgba(139,92,246,.8)]">
+          <Icon name="sliders" className="h-6 w-6" />
+        </span>
+        <div>
+          <h1 className="font-display text-3xl font-bold tracking-tight"><span className="text-gradient">Server settings</span></h1>
+          <p className="mt-0.5 text-sm text-zinc-400">{data.guild.name} · changes reach the bot within a few seconds.</p>
+        </div>
       </header>
       <SettingsForm
         guildId={params.guildId}
