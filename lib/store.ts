@@ -1,10 +1,13 @@
 import "server-only";
 import { env } from "./env";
 
+export type Role = { id: string; name: string; color: string | null; position: number; assignable: boolean };
 export type Overview = {
   guild: { id: string; name: string; icon: string | null; member_count: number; text_channels: number; voice_channels: number; categories: number; roles: number; boosts: number };
   bot: { latency_ms: number | null; started_at: number; guild_count: number; command_count: number; module_count: number };
   prefix: string | null;
+  settings?: { prefix: string | null; autorole: { humans: string[]; bots: string[] } };
+  roles?: Role[];
   modules: { name: string; commands: number }[];
 };
 export type Snapshot = { guild_id: string; updated_at: string; data: Overview };
@@ -37,4 +40,47 @@ export async function getSnapshots(ids: string[]): Promise<Snapshot[]> {
   if (res.status === 404) throw new StoreError("Table zx_snapshots was not found. Run supabase_setup.sql in Supabase.");
   if (!res.ok) throw new StoreError(`Database error (${res.status}).`);
   return (await res.json()) as Snapshot[];
+}
+
+export type JobState = { status: string; result: string | null };
+
+async function rest<T>(method: string, path: string, body?: unknown, prefer?: string): Promise<T> {
+  const base = env("SUPABASE_URL").replace(/\/+$/, "");
+  let res: Response;
+  try {
+    res = await fetch(`${base}/rest/v1/${path}`, {
+      method,
+      headers: { ...headers(), ...(prefer ? { Prefer: prefer } : {}) },
+      body: body === undefined ? undefined : JSON.stringify(body),
+      cache: "no-store",
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch {
+    throw new StoreError("Can't reach the database.");
+  }
+  if (res.status === 404) throw new StoreError("Table zx_jobs was not found. Run supabase_setup.sql in Supabase.");
+  if (!res.ok) throw new StoreError(`Database error (${res.status}).`);
+  const text = await res.text();
+  return (text ? JSON.parse(text) : []) as T;
+}
+
+export async function countPendingJobs(userId: string): Promise<number> {
+  const rows = await rest<unknown[]>("GET", `zx_jobs?user_id=eq.${encodeURIComponent(userId)}&status=in.(pending,working)&select=id`);
+  return rows.length;
+}
+
+/** Queue an action for the bot. The bot re-checks the user's permissions before doing anything. */
+export async function createJob(guildId: string, userId: string, kind: string, payload: unknown): Promise<number> {
+  const rows = await rest<{ id: number }[]>("POST", "zx_jobs", { guild_id: guildId, user_id: userId, kind, payload }, "return=representation");
+  return rows[0].id;
+}
+
+export async function waitForJob(id: number, timeoutMs = 20000): Promise<JobState> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const [row] = await rest<JobState[]>("GET", `zx_jobs?id=eq.${id}&select=status,result`);
+    if (row && (row.status === "done" || row.status === "error")) return row;
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+  return { status: "pending", result: null };
 }
