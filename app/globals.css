@@ -31,6 +31,9 @@ body { background: #05030b; color: #e7e1f7; }
     mask-image: radial-gradient(ellipse 75% 60% at 50% 30%, #000, transparent 75%);
   }
   .cursor-glow { background: radial-gradient(520px circle at var(--cx, 50%) var(--cy, 25%), rgba(139, 92, 246, .14), transparent 60%); }
+  /* landing-page backdrop picture (the small file on phones) */
+  .hero-bg { background: linear-gradient(to bottom, transparent 55%, #05030b 100%), url("/hero-bg-sm.webp") center top / cover no-repeat; z-index: -1; }
+  @media (min-width: 768px) { .hero-bg { background: linear-gradient(to bottom, transparent 60%, #05030b 100%), url("/hero-bg.webp") center top / cover no-repeat; } }
   .vignette { background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .6)); }
 
   /* ---------- surfaces ---------- */

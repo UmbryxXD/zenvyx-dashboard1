@@ -22,6 +22,8 @@ export function CommandPalette({ guildId }: { guildId: string }) {
     { label: "Tickets", hint: "Panels, settings, analytics", href: `${base}/tickets`, icon: "ticket" },
     ...TEMPLATES.map((t) => ({ label: `New panel: ${t.name}`, hint: t.blurb, href: `${base}/tickets/panels/new?template=${t.id}`, icon: "plus" as IconName })),
     { label: "Staff applications", hint: "Questions, settings, history", href: `${base}/applications`, icon: "clipboard" },
+    { label: "Moderation", hint: "Commands, AutoMod, role access, cases", href: `${base}/moderation`, icon: "shield" },
+    { label: "AI", hint: "AI moderation, reports, learned channels", href: `${base}/ai`, icon: "sparkles" },
     { label: "Appeals", hint: "Rules, panel, history", href: `${base}/appeals`, icon: "scale" },
     { label: "Change history", hint: "Who changed what", href: `${base}/activity`, icon: "history" },
     { label: "Switch server", hint: "Pick another server", href: "/servers", icon: "swap" },

@@ -17,7 +17,8 @@ const ITEMS: Item[] = [
   { label: "Appeals", icon: "scale", href: "/appeals", live: true },
   { label: "Change history", icon: "history", href: "/activity", live: true },
   { label: "Moderation", icon: "shield", href: "/moderation", live: true },
-  { label: "AI", icon: "sparkles", live: false },
+  { label: "AI", icon: "sparkles", href: "/ai", live: true },
+
   { label: "Music", icon: "music", live: false },
   { label: "Blox Fruits", icon: "gem", live: false },
 ];

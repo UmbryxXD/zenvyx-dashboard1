@@ -138,9 +138,19 @@ export type ModerationData = {
     incidents: { id: number; user_id: string; rule: string; action: string; outcome: string; created_at: string }[] };
 };
 
+export type AiData = {
+  available: boolean;
+  configured?: boolean;
+  mod?: { enabled: boolean; action: "log" | "delete" | "timeout"; min_severity: number; strictness: "low" | "normal" | "high"; timeout_minutes: number; ignored: string[] };
+  reports?: { channel_id: string | null; ping_role_id: string | null };
+  learned?: { id: string; name: string | null }[];
+  learned_messages?: number;
+  limits?: { channels: number | null; messages: number | null; per_channel: number | null };
+};
+
 export type AuditRow = { id: number; user_name: string | null; kind: string; summary: string | null; created_at: string };
 
-export async function getData<T>(guildId: string, key: "tickets" | "staffapps" | "appeals" | "moderation"): Promise<{ data: T; updated_at: string } | null> {
+export async function getData<T>(guildId: string, key: "tickets" | "staffapps" | "appeals" | "moderation" | "ai"): Promise<{ data: T; updated_at: string } | null> {
   if (!/^\d{5,25}$/.test(guildId)) return null;
   const [row] = await rest<{ data: T; updated_at: string }[]>("GET", `zx_data?guild_id=eq.${guildId}&key=eq.${key}&select=data,updated_at`);
   return row ?? null;

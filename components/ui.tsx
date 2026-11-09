@@ -213,6 +213,35 @@ function RolePopup({ title, roles, selected, onToggle, max, needAssignable, onCl
   );
 }
 
+/** Chosen text channels as removable chips + a dropdown to add more. Light on phones (no popup needed). */
+export function ChannelPicker({ channels, selected, onChange, max = 25, placeholder = "Add a channel…" }: {
+  channels: Channel[]; selected: string[]; onChange: (ids: string[]) => void; max?: number; placeholder?: string;
+}) {
+  const text = channels.filter((c) => c.type === "text");
+  const byId = new Map(text.map((c) => [c.id, c]));
+  const free = text.filter((c) => !selected.includes(c.id));
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2">
+        {selected.length === 0 && <span className="text-sm text-zinc-500">None selected.</span>}
+        {selected.map((id) => (
+          <span key={id} className="inline-flex items-center gap-1.5 rounded-full border border-violet-400/40 bg-violet-600/20 py-1 pl-3 pr-1 text-sm text-white">
+            <span className="max-w-[12rem] truncate"># {byId.get(id)?.name ?? "deleted-channel"}</span>
+            <button type="button" onClick={() => onChange(selected.filter((x) => x !== id))} aria-label={`Remove ${byId.get(id)?.name ?? "channel"}`}
+                    className="flex h-6 w-6 items-center justify-center rounded-full text-violet-200 hover:bg-white/10"><Icon name="x" className="h-3.5 w-3.5" /></button>
+          </span>
+        ))}
+      </div>
+      {selected.length < max && (
+        <select aria-label={placeholder} value="" onChange={(e) => e.target.value && onChange([...selected, e.target.value])} className={`${inputCls} max-w-sm`}>
+          <option value="">{placeholder}</option>
+          {free.map((c) => <option key={c.id} value={c.id}># {c.name}{c.parent ? `  ·  ${c.parent}` : ""}</option>)}
+        </select>
+      )}
+    </div>
+  );
+}
+
 export function SaveBar({ dirty, pending, result, onSave, onReset, disabled, saveLabel = "Save changes" }: {
   dirty: boolean; pending: boolean; result: JobResult | null; onSave: () => void; onReset?: () => void; disabled?: boolean; saveLabel?: string;
 }) {

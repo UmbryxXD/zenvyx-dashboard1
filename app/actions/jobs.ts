@@ -11,6 +11,7 @@ const KINDS = new Set([
   "staffapps.config.save", "appeals.config.save", "appeals.panel.publish", "modules.toggle",
   "moderation.command.toggle", "moderation.commands.bulk", "moderation.automod.master", "moderation.automod.option.save", "moderation.automod.rule.save", "moderation.automod.logging.save", "moderation.logs.save",
   "moderation.roleperm.add", "moderation.roleperm.save", "moderation.roleperm.remove",
+  "ai.mod.save", "ai.mod.test", "ai.reports.save", "ai.reports.create", "ai.learn.add", "ai.learn.remove", "ai.learn.clear",
 ]);
 
 /** Queue one action for the bot. The bot validates the contents and re-checks permissions itself. */
@@ -27,7 +28,7 @@ export async function submitJob(input: { guildId: string; kind: string; payload:
   try {
     if ((await countPendingJobs(session.id)) >= 3) return { ok: false, message: "You have too many unfinished changes. Wait a few seconds and try again." };
     const id = await createJob(input.guildId, session.id, input.kind, input.payload ?? {});
-    const job = await waitForJob(id);
+    const job = await waitForJob(id, input.kind === "ai.learn.add" ? 50000 : 20000); // reading channel history takes a little longer
     if (job.status === "done") return { ok: true, message: job.result || "Saved." };
     if (job.status === "error") return { ok: false, message: job.result || "The bot couldn't apply this." };
     return { ok: false, message: "The bot didn't answer in time. It may be offline. The change expires after 2 minutes." };

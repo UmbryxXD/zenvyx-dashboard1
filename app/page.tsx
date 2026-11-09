@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 import { Icon, type IconName } from "@/components/Icon";
-import { Logo } from "@/components/Logo";
 import { getSession } from "@/lib/session";
 
 const ERRORS: Record<string, string> = {
@@ -22,12 +21,13 @@ export default async function Home({ searchParams }: { searchParams: { error?: s
   const error = searchParams.error ? ERRORS[searchParams.error] || ERRORS.server : null;
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center px-4 py-12 text-center">
-      <div className="relative mb-10 flex h-40 w-40 items-center justify-center">
-        <span className="orbit inset-0" />
-        <span className="orbit inset-5" style={{ animationDuration: "11s", animationDirection: "reverse" }} />
-        <span className="orbit inset-10" style={{ animationDuration: "7s" }} />
-        <div className="float relative"><Logo size={56} /></div>
+    <>
+    <div className="hero-bg fx" aria-hidden="true" />
+    <main className="relative mx-auto flex min-h-dvh max-w-xl flex-col items-center justify-center px-4 py-12 text-center">
+      <div className="relative mb-8 flex h-44 w-44 items-center justify-center sm:h-52 sm:w-52">
+        <span className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(124,58,237,.45),transparent_65%)]" aria-hidden="true" />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="Zenvyx" width={208} height={208} className="float relative h-full w-full object-contain" />
       </div>
 
       <h1 className="rise font-display text-4xl font-bold leading-tight tracking-tight sm:text-5xl">
@@ -56,5 +56,6 @@ export default async function Home({ searchParams }: { searchParams: { error?: s
         ))}
       </ul>
     </main>
+    </>
   );
 }

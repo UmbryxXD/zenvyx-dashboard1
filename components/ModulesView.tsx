@@ -28,7 +28,7 @@ export function ModulesView({ guildId, tickets, staffapps, loaded }: {
     { id: "staffapps", name: "Staff applications", icon: "clipboard", blurb: "Application questions, review settings and history.", href: `${base}/applications`, toggle: "staffapps", state: state.staffapps },
     { id: "appeals", name: "Appeals", icon: "scale", blurb: "Ban/mute appeal rules, panel and decisions.", href: `${base}/appeals` },
     { id: "mod", name: "Moderation", icon: "shield", blurb: "Command controls, AutoMod rules, punishment tools and moderation activity.", href: `${base}/moderation` },
-    { id: "ai", name: "AI", icon: "sparkles", blurb: "AI staff helper and auto-replies.", soon: true },
+    { id: "ai", name: "AI", icon: "sparkles", blurb: "AI moderation, member Q&A (ask), reports and what the AI has learned.", href: `${base}/ai` },
     { id: "music", name: "Music", icon: "music", blurb: "Voice channel music player.", soon: true },
     { id: "blox", name: "Blox Fruits", icon: "gem", blurb: "Stock, trading and game tools.", soon: true },
   ];
