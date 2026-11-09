@@ -119,9 +119,20 @@ export type AppealsData = {
   open: number;
   total: number;
 };
+
+export type ModerationCommand = { name: string; root: string; category: "Moderation" | "AutoMod"; description: string; signature: string; usage: string; aliases: string[]; enabled: boolean; permission: string };
+export type ModerationRule = { key: string; label: string; enabled: boolean; action: string; summary: string; config: Record<string, unknown> };
+export type ModerationData = {
+  commands: ModerationCommand[];
+  modlog_channel_id: string | null;
+  cases: { case_id: number; user_id: string; user_name: string; moderator_id: string; moderator_name: string; action: string; reason: string; duration: string | null; created_at: string; expires_at: string | null; active: boolean }[];
+  automod: { enabled: boolean; bypass_staff: boolean; scan_edits: boolean; log_channel_id: string | null; rules: ModerationRule[];
+    incidents: { id: number; user_id: string; rule: string; action: string; outcome: string; created_at: string }[] };
+};
+
 export type AuditRow = { id: number; user_name: string | null; kind: string; summary: string | null; created_at: string };
 
-export async function getData<T>(guildId: string, key: "tickets" | "staffapps" | "appeals"): Promise<{ data: T; updated_at: string } | null> {
+export async function getData<T>(guildId: string, key: "tickets" | "staffapps" | "appeals" | "moderation"): Promise<{ data: T; updated_at: string } | null> {
   if (!/^\d{5,25}$/.test(guildId)) return null;
   const [row] = await rest<{ data: T; updated_at: string }[]>("GET", `zx_data?guild_id=eq.${guildId}&key=eq.${key}&select=data,updated_at`);
   return row ?? null;

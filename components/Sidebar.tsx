@@ -16,7 +16,7 @@ const ITEMS: Item[] = [
   { label: "Staff applications", icon: "clipboard", href: "/applications", live: true },
   { label: "Appeals", icon: "scale", href: "/appeals", live: true },
   { label: "Change history", icon: "history", href: "/activity", live: true },
-  { label: "Moderation", icon: "shield", live: false },
+  { label: "Moderation", icon: "shield", href: "/moderation", live: true },
   { label: "AI", icon: "sparkles", live: false },
   { label: "Music", icon: "music", live: false },
   { label: "Blox Fruits", icon: "gem", live: false },
