@@ -10,6 +10,7 @@ const KINDS = new Set([
   "tickets.config.save", "tickets.panel.save", "tickets.panel.delete", "tickets.panel.publish",
   "staffapps.config.save", "appeals.config.save", "appeals.panel.publish", "modules.toggle",
   "moderation.command.toggle", "moderation.commands.bulk", "moderation.automod.master", "moderation.automod.option.save", "moderation.automod.rule.save", "moderation.automod.logging.save", "moderation.logs.save",
+  "moderation.roleperm.add", "moderation.roleperm.save", "moderation.roleperm.remove",
 ]);
 
 /** Queue one action for the bot. The bot validates the contents and re-checks permissions itself. */

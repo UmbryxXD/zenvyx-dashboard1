@@ -4,13 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Icon } from "./Icon";
 import { Badge, Section, Stat, Tabs, useJob } from "./ui";
-import type { Channel, ModerationCommand, ModerationData, ModerationRule } from "@/lib/store";
+import { RolePermsPanel } from "./RolePermsPanel";
+import type { Channel, ModerationCommand, ModerationData, ModerationRule, Role } from "@/lib/store";
 
-type Tab = "commands" | "automod" | "activity";
+type Tab = "commands" | "roles" | "automod" | "activity";
 const CATEGORIES = ["All", "Moderation", "AutoMod"] as const;
 const ACTIONS = ["delete", "warn", "timeout", "kick", "ban", "jail"];
 
-export function ModerationView({ guildId, data, prefix, channels }: { guildId: string; data: ModerationData; prefix: string; channels: Channel[] }) {
+export function ModerationView({ guildId, data, prefix, channels, roles }: { guildId: string; data: ModerationData; prefix: string; channels: Channel[]; roles: Role[] }) {
   const router = useRouter();
   const { pending, result, run } = useJob(guildId);
   const [tab, setTab] = useState<Tab>("commands");
@@ -63,7 +64,7 @@ export function ModerationView({ guildId, data, prefix, channels }: { guildId: s
         <Stat label="Recent incidents" value={automod.incidents.length} icon="activity" hint="Latest stored AutoMod events" />
       </div>
 
-      <Tabs tabs={[{ id: "commands", label: "Command manager", icon: "terminal" }, { id: "automod", label: "Auto Moderation", icon: "shield" }, { id: "activity", label: "Activity & logs", icon: "history" }]} value={tab} onChange={setTab} />
+      <Tabs tabs={[{ id: "commands", label: "Command manager", icon: "terminal" }, { id: "roles", label: "Role permissions", icon: "users" }, { id: "automod", label: "Auto Moderation", icon: "shield" }, { id: "activity", label: "Activity & logs", icon: "history" }]} value={tab} onChange={setTab} />
 
       {result && <p role="status" className={`text-sm ${result.ok ? "text-emerald-300" : "text-rose-300"}`}>{result.message}</p>}
 
@@ -89,6 +90,8 @@ export function ModerationView({ guildId, data, prefix, channels }: { guildId: s
           {commands.map((command) => <CommandCard key={command.name} command={command} prefix={prefix} pending={pending} onToggle={toggleCommand} onHelp={setHelp} />)}
         </div> : <div className="glass p-8 text-center text-sm text-zinc-500">No commands match your search.</div>}
       </div>}
+
+      {tab === "roles" && <RolePermsPanel guildId={guildId} access={data.role_access} roles={roles} prefix={prefix} />}
 
       {tab === "automod" && <div className="space-y-5">
         <Section icon="shield" title="AutoMod protection" hint="These settings use the bot's existing AutoMod database and detection engine." aside={<Badge tone={automod.enabled ? "green" : "amber"}>{automod.enabled ? "System active" : "Paused"}</Badge>}>

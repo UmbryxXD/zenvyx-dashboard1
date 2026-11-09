@@ -122,8 +122,16 @@ export type AppealsData = {
 
 export type ModerationCommand = { name: string; root: string; category: "Moderation" | "AutoMod"; description: string; signature: string; usage: string; aliases: string[]; enabled: boolean; permission: string };
 export type ModerationRule = { key: string; label: string; enabled: boolean; action: string; summary: string; config: Record<string, unknown> };
+export type RoleAccess = {
+  available: boolean;
+  staff_roles: string[];
+  grants: Record<string, string[]>;
+  catalog: { category: string; emoji: string; blurb: string; commands: { name: string; description: string }[] }[];
+  presets: Record<string, string[]>;
+};
 export type ModerationData = {
   commands: ModerationCommand[];
+  role_access?: RoleAccess;
   modlog_channel_id: string | null;
   cases: { case_id: number; user_id: string; user_name: string; moderator_id: string; moderator_name: string; action: string; reason: string; duration: string | null; created_at: string; expires_at: string | null; active: boolean }[];
   automod: { enabled: boolean; bypass_staff: boolean; scan_edits: boolean; log_channel_id: string | null; rules: ModerationRule[];
