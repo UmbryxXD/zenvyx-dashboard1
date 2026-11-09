@@ -2,12 +2,14 @@ import "server-only";
 import { env } from "./env";
 
 export type Role = { id: string; name: string; color: string | null; position: number; assignable: boolean };
+export type Channel = { id: string; name: string; type: "text" | "category"; parent?: string | null };
 export type Overview = {
   guild: { id: string; name: string; icon: string | null; member_count: number; text_channels: number; voice_channels: number; categories: number; roles: number; boosts: number };
   bot: { latency_ms: number | null; started_at: number; guild_count: number; command_count: number; module_count: number };
   prefix: string | null;
   settings?: { prefix: string | null; autorole: { humans: string[]; bots: string[] } };
   roles?: Role[];
+  channels?: Channel[];
   modules: { name: string; commands: number }[];
 };
 export type Snapshot = { guild_id: string; updated_at: string; data: Overview };
@@ -58,7 +60,7 @@ async function rest<T>(method: string, path: string, body?: unknown, prefer?: st
   } catch {
     throw new StoreError("Can't reach the database.");
   }
-  if (res.status === 404) throw new StoreError("Table zx_jobs was not found. Run supabase_setup.sql in Supabase.");
+  if (res.status === 404) throw new StoreError("A database table is missing. Run the latest supabase_setup.sql in Supabase.");
   if (!res.ok) throw new StoreError(`Database error (${res.status}).`);
   const text = await res.text();
   return (text ? JSON.parse(text) : []) as T;
@@ -83,4 +85,45 @@ export async function waitForJob(id: number, timeoutMs = 20000): Promise<JobStat
     await new Promise((r) => setTimeout(r, 1000));
   }
   return { status: "pending", result: null };
+}
+
+// ---------------------------------------------------------------- feature data
+export type PanelOption = { label: string; emoji?: string; type: string; description?: string };
+export type PanelQuestion = { label: string; style: string; required: boolean; placeholder?: string };
+export type PanelConfig = {
+  name?: string; type: "normal" | "form" | "multiple"; title: string; description: string; color: string;
+  author_name?: string; author_icon_url?: string; thumbnail_url?: string; banner_url?: string; footer?: string;
+  options: PanelOption[]; questions?: PanelQuestion[];
+};
+export type TicketsData = {
+  config: { enabled: boolean; category_id: string | null; log_channel_id: string | null; transcript_channel_id: string | null };
+  staff_roles: string[];
+  panels: { name: string; status: string; updated_at: string; config: PanelConfig }[];
+  recent: { id: number; user: string; category: string; status: string; claimed_by: string; created_at: string }[];
+  stats: { total: number; open: number; per_day: { date: string; count: number }[]; top_claimers: { name: string; count: number }[] };
+};
+export type StaffAppsData = {
+  config: { enabled: boolean; result_channel_id: string | null; ping_role_id: string | null; accept_role_id: string | null; log_channel_id: string | null };
+  questions: string[];
+  history: { id: number; applicant: string; reviewer: string; accepted: boolean; note: string; decided_at: string }[];
+  stats: { accepted: number; denied: number };
+};
+export type AppealsData = {
+  config: { channel_id: string | null; cooldown_hours: number; strict: boolean; posted: boolean };
+  recent: { id: number; user: string; status: string; created_at: string }[];
+  ai_status: Record<string, number>;
+  open: number;
+  total: number;
+};
+export type AuditRow = { id: number; user_name: string | null; kind: string; summary: string | null; created_at: string };
+
+export async function getData<T>(guildId: string, key: "tickets" | "staffapps" | "appeals"): Promise<{ data: T; updated_at: string } | null> {
+  if (!/^\d{5,25}$/.test(guildId)) return null;
+  const [row] = await rest<{ data: T; updated_at: string }[]>("GET", `zx_data?guild_id=eq.${guildId}&key=eq.${key}&select=data,updated_at`);
+  return row ?? null;
+}
+
+export async function getAudit(guildId: string): Promise<AuditRow[]> {
+  if (!/^\d{5,25}$/.test(guildId)) return [];
+  return rest<AuditRow[]>("GET", `zx_audit?guild_id=eq.${guildId}&order=id.desc&limit=100&select=id,user_name,kind,summary,created_at`);
 }

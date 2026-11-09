@@ -9,12 +9,14 @@ type Item = { label: string; icon: IconName; href?: string; live: boolean };
 const ITEMS: Item[] = [
   { label: "Overview", icon: "grid", href: "", live: true },
   { label: "Server settings", icon: "sliders", href: "/settings", live: true },
+  { label: "Tickets", icon: "ticket", href: "/tickets", live: true },
+  { label: "Staff applications", icon: "clipboard", href: "/applications", live: true },
+  { label: "Appeals", icon: "scale", href: "/appeals", live: true },
+  { label: "Change history", icon: "history", href: "/activity", live: true },
   { label: "Moderation", icon: "shield", live: false },
   { label: "AI", icon: "sparkles", live: false },
   { label: "Music", icon: "music", live: false },
   { label: "Blox Fruits", icon: "gem", live: false },
-  { label: "Appeals & reports", icon: "flag", live: false },
-  { label: "Logs", icon: "scroll", live: false },
 ];
 
 export function Sidebar({ guildId, guild, user }: {
@@ -46,10 +48,16 @@ export function Sidebar({ guildId, guild, user }: {
         </a>
       )}
 
+      <button type="button" onClick={() => window.dispatchEvent(new Event("zx:palette"))}
+              className="mx-3 mb-3 hidden items-center gap-2 rounded-xl border border-white/[0.07] bg-black/20 px-3 py-2 text-sm text-zinc-500 transition hover:border-violet-400/40 hover:text-zinc-300 md:flex">
+        <Icon name="search" className="h-4 w-4" /><span className="flex-1 text-left">Search…</span>
+        <kbd className="rounded border border-white/10 px-1.5 py-0.5 text-[10px]">Ctrl K</kbd>
+      </button>
+
       <nav className="flex gap-1 overflow-x-auto px-3 pb-3 md:flex-1 md:flex-col md:overflow-y-auto" aria-label="Dashboard sections">
         {ITEMS.map((item) => {
           const href = `/dashboard/${guildId}${item.href ?? ""}`;
-          const active = pathname === href;
+          const active = item.href ? pathname === href || pathname.startsWith(href + "/") : pathname === href;
           const inner = (
             <>
               {active && <span className="absolute bottom-2 left-0 top-2 w-[3px] rounded-r bg-violet-400 shadow-[0_0_14px_2px_rgba(167,139,250,.9)]" />}
