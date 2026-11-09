@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Icon } from "@/components/Icon";
 import { Logo } from "@/components/Logo";
@@ -52,7 +53,7 @@ export default async function Servers() {
       </header>
 
       <section className="rise mt-14">
-        <h1 className="font-display text-4xl font-bold tracking-tight"><span className="text-gradient">Select a server</span></h1>
+        <h1 className="font-display text-3xl font-bold tracking-tight sm:text-4xl"><span className="text-gradient">Select a server</span></h1>
         <p className="mt-2 text-sm text-zinc-400">Only servers where you have Administrator or Manage Server are shown.</p>
       </section>
 
@@ -65,7 +66,7 @@ export default async function Servers() {
           const m = withBot.get(g.id)!.data.guild;
           const icon = guildIcon(m);
           return (
-            <a key={g.id} href={`/dashboard/${g.id}`} style={{ animationDelay: `${i * 60}ms` }}
+            <Link key={g.id} href={`/dashboard/${g.id}`} style={{ animationDelay: `${i * 60}ms` }}
                className="glass spot rise group flex items-center gap-4 p-4 transition duration-300 hover:-translate-y-1">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               {icon ? <img src={icon} alt="" className="h-14 w-14 rounded-2xl ring-1 ring-white/10 transition duration-300 group-hover:shadow-[0_0_28px_-4px_rgba(139,92,246,.9)]" /> : <Initial name={m.name} />}
@@ -78,7 +79,7 @@ export default async function Servers() {
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-500/10 text-violet-300 transition duration-300 group-hover:translate-x-1 group-hover:bg-violet-500/25">
                 <Icon name="arrow" className="h-4 w-4" />
               </span>
-            </a>
+            </Link>
           );
         })}
         {missing.map((g, i) => {

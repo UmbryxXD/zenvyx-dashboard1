@@ -17,6 +17,7 @@ export function CommandPalette({ guildId }: { guildId: string }) {
 
   const items: Item[] = useMemo(() => [
     { label: "Overview", hint: "Server stats and bot status", href: base, icon: "grid" },
+    { label: "Modules", hint: "Turn features on or off", href: `${base}/modules`, icon: "puzzle" },
     { label: "Server settings", hint: "Prefix and autoroles", href: `${base}/settings`, icon: "sliders" },
     { label: "Tickets", hint: "Panels, settings, analytics", href: `${base}/tickets`, icon: "ticket" },
     ...TEMPLATES.map((t) => ({ label: `New panel: ${t.name}`, hint: t.blurb, href: `${base}/tickets/panels/new?template=${t.id}`, icon: "plus" as IconName })),

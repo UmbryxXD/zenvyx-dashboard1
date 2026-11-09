@@ -3,11 +3,17 @@
 import { useEffect, useRef } from "react";
 import { startParticles } from "@/lib/particles";
 
-/** Fixed full-screen backdrop: aurora, grid, particle network, grain, cursor glow. Also powers the card spotlight. */
+/** Fixed full-screen backdrop: aurora, grid, particle network (desktop only), cursor glow. Also powers the card spotlight. */
 export function Background() {
   const canvas = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    // Heavy effects only on a real desktop: skip on phones/touch, small screens, reduced motion, or low-power devices.
+    const nav = navigator as Navigator & { deviceMemory?: number };
+    const light =
+      window.matchMedia("(max-width: 767px), (hover: none), (prefers-reduced-motion: reduce)").matches ||
+      (nav.hardwareConcurrency ?? 8) <= 4 || (nav.deviceMemory ?? 8) <= 4;
+    if (light) return;
     const stop = canvas.current ? startParticles(canvas.current) : () => {};
     const root = document.documentElement;
     let raf = 0;
@@ -44,7 +50,6 @@ export function Background() {
       <canvas ref={canvas} className="fx" aria-hidden="true" />
       <div className="fx cursor-glow" aria-hidden="true" />
       <div className="fx vignette" aria-hidden="true" />
-      <div className="fx grain" aria-hidden="true" />
     </>
   );
 }

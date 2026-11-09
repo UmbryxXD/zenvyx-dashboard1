@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CountUp } from "@/components/CountUp";
 import { ErrorCard } from "@/components/ErrorCard";
@@ -19,7 +20,7 @@ function Stat({ label, icon, value, text, hint, delay }: { label: string; icon: 
           <Icon name={icon} className="h-[18px] w-[18px]" />
         </span>
       </div>
-      <p className="mt-3 font-display text-3xl font-semibold tracking-tight text-white">
+      <p className="mt-3 font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">
         {value !== undefined ? <CountUp value={value} /> : text}
       </p>
       {hint && <p className="mt-1 text-xs text-zinc-500">{hint}</p>}
@@ -68,14 +69,14 @@ export default async function Page({ params }: { params: { guildId: string } }) 
 
   return (
     <div className="space-y-8">
-      <header className="glass rise relative flex flex-wrap items-center gap-5 overflow-hidden p-6">
+      <header className="glass rise relative flex flex-wrap items-center gap-4 overflow-hidden p-4 sm:gap-5 sm:p-6">
         <div className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-violet-600/25 blur-3xl" />
         {guild.icon
           // eslint-disable-next-line @next/next/no-img-element
-          ? <img src={guild.icon} alt="" className="relative h-20 w-20 rounded-3xl shadow-[0_0_40px_-6px_rgba(139,92,246,.8)] ring-1 ring-white/15" />
-          : <span className="relative flex h-20 w-20 items-center justify-center rounded-3xl bg-ink-700 font-display text-3xl text-violet-300 ring-1 ring-white/10">{guild.name.slice(0, 1)}</span>}
+          ? <img src={guild.icon} alt="" className="relative h-14 w-14 rounded-2xl sm:h-20 sm:w-20 sm:rounded-3xl shadow-[0_0_40px_-6px_rgba(139,92,246,.8)] ring-1 ring-white/15" />
+          : <span className="relative flex h-14 w-14 items-center justify-center rounded-2xl sm:h-20 sm:w-20 sm:rounded-3xl bg-ink-700 font-display text-3xl text-violet-300 ring-1 ring-white/10">{guild.name.slice(0, 1)}</span>}
         <div className="relative min-w-0 flex-1">
-          <h1 className="truncate font-display text-3xl font-bold tracking-tight text-white">{guild.name}</h1>
+          <h1 className="truncate font-display text-xl font-bold sm:text-3xl tracking-tight text-white">{guild.name}</h1>
           <div className="mt-2 flex flex-wrap items-center gap-2 text-sm">
             <span className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs ${online ? "border-emerald-400/25 bg-emerald-500/10 text-emerald-300" : "border-rose-400/25 bg-rose-500/10 text-rose-300"}`}>
               <span className="relative flex h-2 w-2">
@@ -91,9 +92,9 @@ export default async function Page({ params }: { params: { guildId: string } }) 
             )}
           </div>
         </div>
-        <a href={`/dashboard/${params.guildId}/settings`} className="btn btn-primary relative">
+        <Link href={`/dashboard/${params.guildId}/settings`} className="btn btn-primary relative w-full sm:w-auto">
           <Icon name="sliders" className="h-4 w-4" /> Server settings
-        </a>
+        </Link>
       </header>
 
       <section aria-label="Server stats">
@@ -113,7 +114,7 @@ export default async function Page({ params }: { params: { guildId: string } }) 
           <div className="glass spot rise group flex items-center justify-between p-5" style={{ animationDelay: "360ms" }}>
             <div>
               <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500">Latency</p>
-              <p className="mt-3 font-display text-3xl font-semibold tracking-tight text-white">{online && b.latency_ms !== null ? `${b.latency_ms} ms` : "—"}</p>
+              <p className="mt-3 font-display text-2xl font-semibold tracking-tight text-white sm:text-3xl">{online && b.latency_ms !== null ? `${b.latency_ms} ms` : "—"}</p>
             </div>
             {online && b.latency_ms !== null && <Ring ms={b.latency_ms} />}
           </div>

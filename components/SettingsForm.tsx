@@ -1,81 +1,23 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type Dispatch, type ReactNode, type SetStateAction } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import { saveSettings } from "@/app/actions/settings";
 import type { Role } from "@/lib/store";
-import { Icon, type IconName } from "./Icon";
+import { Icon } from "./Icon";
+import { RoleChips, Section } from "./ui";
 
 const MAX = 10;
-
-function Section({ icon, title, hint, aside, children }: { icon: IconName; title: string; hint: string; aside?: ReactNode; children: ReactNode }) {
-  return (
-    <section className="glass spot rise p-6">
-      <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-300 ring-1 ring-violet-400/20">
-          <Icon name={icon} className="h-5 w-5" />
-        </span>
-        <div className="min-w-0 flex-1">
-          <h3 className="font-display text-lg font-semibold text-white">{title}</h3>
-          <p className="mt-0.5 text-sm text-zinc-400">{hint}</p>
-        </div>
-        {aside}
-      </div>
-      <div className="mt-5">{children}</div>
-    </section>
-  );
-}
-
-function RolePicker({ icon, title, hint, roles, selected, onToggle }: {
-  icon: IconName; title: string; hint: string; roles: Role[]; selected: string[]; onToggle: (id: string) => void;
-}) {
-  const [query, setQuery] = useState("");
-  const shown = roles.filter((r) => r.name.toLowerCase().includes(query.toLowerCase()));
-  return (
-    <Section icon={icon} title={title} hint={hint} aside={
-      <span className="shrink-0 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs text-zinc-300">{selected.length}/{MAX}</span>
-    }>
-      <div className="mb-4 h-1 overflow-hidden rounded-full bg-white/[0.06]">
-        <div className="h-full rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-400 transition-all duration-500" style={{ width: `${(selected.length / MAX) * 100}%` }} />
-      </div>
-      <label className="relative block">
-        <Icon name="search" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
-        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search roles" aria-label={`Search ${title}`}
-               className="w-full rounded-xl border border-white/10 bg-black/30 py-2.5 pl-9 pr-3 text-sm text-white outline-none transition placeholder:text-zinc-600 focus:border-violet-400/60 focus:shadow-[0_0_0_4px_rgba(139,92,246,.15)]" />
-      </label>
-      <div className="mt-4 flex max-h-60 flex-wrap gap-2 overflow-y-auto pr-1">
-        {shown.map((r) => {
-          const on = selected.includes(r.id);
-          const locked = !r.assignable && !on;
-          const full = !on && selected.length >= MAX;
-          return (
-            <button key={r.id} type="button" aria-pressed={on} disabled={locked || full} onClick={() => onToggle(r.id)}
-                    title={locked ? "Above my highest role. Move the Zenvyx role higher in Discord." : undefined}
-                    className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm transition duration-200 ${
-                      on ? "border-violet-400/60 bg-violet-600/25 text-white shadow-[0_0_22px_-6px_rgba(139,92,246,.9)]"
-                         : "border-white/10 bg-white/[0.02] text-zinc-300 hover:-translate-y-0.5 hover:border-violet-400/40 hover:bg-white/[0.06]"
-                    } disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0`}>
-              <span className="h-2.5 w-2.5 rounded-full" style={{ background: r.color || "#6b7280", boxShadow: r.color ? `0 0 8px ${r.color}` : undefined }} />
-              {r.name}
-              {on && <Icon name="check" className="pop h-3.5 w-3.5 text-violet-200" />}
-              {locked && <Icon name="lock" className="h-3 w-3" />}
-            </button>
-          );
-        })}
-        {shown.length === 0 && <p className="text-sm text-zinc-500">No roles match.</p>}
-      </div>
-    </Section>
-  );
-}
 
 const same = (a: string[], b: string[]) => a.length === b.length && a.every((x) => b.includes(x));
 
 export function SettingsForm(props: {
-  guildId: string; prefix: string; humans: string[]; bots: string[]; roles: Role[]; online: boolean;
+  guildId: string; prefix: string; nickname: string; humans: string[]; bots: string[]; roles: Role[]; online: boolean;
 }) {
   const router = useRouter();
-  const [base, setBase] = useState({ prefix: props.prefix, humans: props.humans, bots: props.bots });
+  const [base, setBase] = useState({ prefix: props.prefix, nickname: props.nickname, humans: props.humans, bots: props.bots });
   const [prefix, setPrefix] = useState(props.prefix);
+  const [nickname, setNickname] = useState(props.nickname);
   const [humans, setHumans] = useState(props.humans);
   const [bots, setBots] = useState(props.bots);
   const [result, setResult] = useState<{ ok: boolean; message: string } | null>(null);
@@ -83,7 +25,7 @@ export function SettingsForm(props: {
 
   const toggle = (set: Dispatch<SetStateAction<string[]>>) => (id: string) =>
     set((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]));
-  const dirty = prefix !== base.prefix || !same(humans, base.humans) || !same(bots, base.bots);
+  const dirty = prefix !== base.prefix || nickname !== base.nickname || !same(humans, base.humans) || !same(bots, base.bots);
   const valid = prefix.length >= 1 && prefix.length <= 5 && !/\s/.test(prefix);
 
   const save = async () => {
@@ -91,10 +33,10 @@ export function SettingsForm(props: {
     setPending(true);
     setResult(null);
     try {
-      const r = await saveSettings({ guildId: props.guildId, prefix, humans, bots });
+      const r = await saveSettings({ guildId: props.guildId, prefix, nickname, humans, bots });
       setResult(r);
       if (r.ok) {
-        setBase({ prefix, humans, bots });
+        setBase({ prefix, nickname, humans, bots });
         router.refresh();
       }
     } catch {
@@ -125,15 +67,24 @@ export function SettingsForm(props: {
         {!valid && <p className="mt-3 text-xs text-rose-300">1-5 characters, no spaces.</p>}
       </Section>
 
-      <RolePicker icon="users" title="Member autoroles" hint="Given to every human who joins." roles={props.roles} selected={humans} onToggle={toggle(setHumans)} />
-      <RolePicker icon="server" title="Bot autoroles" hint="Given to every bot that is added." roles={props.roles} selected={bots} onToggle={toggle(setBots)} />
+      <Section icon="sparkles" title="Bot nickname" hint="How Zenvyx is named in this server. Leave empty for the default name.">
+        <input value={nickname} onChange={(e) => setNickname(e.target.value)} maxLength={32} aria-label="Bot nickname" placeholder="Zenvyx"
+               className="w-full max-w-sm rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-white outline-none transition focus:border-violet-400/60 focus:shadow-[0_0_0_4px_rgba(139,92,246,.15)]" />
+      </Section>
 
-      <div className={`glass sticky bottom-4 z-10 flex flex-wrap items-center gap-4 p-4 shadow-[0_20px_60px_-20px_rgba(0,0,0,.9)] ${dirty ? "glow-border" : ""}`}>
+      <Section icon="users" title="Member autoroles" hint="Given to every human who joins." aside={<span className="shrink-0 text-xs text-zinc-500">{humans.length}/{MAX}</span>}>
+        <RoleChips title="Member autoroles" roles={props.roles} selected={humans} onToggle={toggle(setHumans)} max={MAX} needAssignable />
+      </Section>
+      <Section icon="server" title="Bot autoroles" hint="Given to every bot that is added." aside={<span className="shrink-0 text-xs text-zinc-500">{bots.length}/{MAX}</span>}>
+        <RoleChips title="Bot autoroles" roles={props.roles} selected={bots} onToggle={toggle(setBots)} max={MAX} needAssignable />
+      </Section>
+
+      <div className={`glass safe-b sticky bottom-2 z-10 flex flex-wrap items-center gap-3 p-3 sm:bottom-4 sm:gap-4 sm:p-4 ${dirty ? "glow-border" : ""}`}>
         <button type="button" onClick={save} disabled={!dirty || !valid || pending} className="btn btn-primary disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none">
           {pending ? <><span className="spinner" /> Saving…</> : "Save changes"}
         </button>
         {dirty && !pending && (
-          <button type="button" className="btn btn-ghost" onClick={() => { setPrefix(base.prefix); setHumans(base.humans); setBots(base.bots); setResult(null); }}>
+          <button type="button" className="btn btn-ghost" onClick={() => { setPrefix(base.prefix); setNickname(base.nickname); setHumans(base.humans); setBots(base.bots); setResult(null); }}>
             Reset
           </button>
         )}

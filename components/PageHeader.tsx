@@ -7,7 +7,7 @@ export function PageHeader({ icon, title, subtitle, action }: { icon: IconName; 
         <Icon name={icon} className="h-6 w-6" />
       </span>
       <div className="min-w-0 flex-1">
-        <h1 className="font-display text-3xl font-bold tracking-tight"><span className="text-gradient">{title}</span></h1>
+        <h1 className="font-display text-2xl font-bold sm:text-3xl tracking-tight"><span className="text-gradient">{title}</span></h1>
         {subtitle && <p className="mt-0.5 text-sm text-zinc-400">{subtitle}</p>}
       </div>
       {action}

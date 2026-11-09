@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Icon } from "./Icon";
 
 export function ErrorCard({ title, message }: { title: string; message: string }) {
@@ -8,7 +9,7 @@ export function ErrorCard({ title, message }: { title: string; message: string }
       </span>
       <h1 className="font-display text-xl font-semibold text-white">{title}</h1>
       <p className="mt-2 text-sm leading-relaxed text-zinc-400">{message}</p>
-      <a href="/servers" className="btn btn-ghost mt-6">Back to servers</a>
+      <Link href="/servers" className="btn btn-ghost mt-6">Back to servers</Link>
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { manageableGuilds } from "@/lib/access";
 import { getSession } from "@/lib/session";
 import { countPendingJobs, createJob, StoreError, waitForJob } from "@/lib/store";
 
-export type SaveInput = { guildId: string; prefix: string; humans: string[]; bots: string[] };
+export type SaveInput = { guildId: string; prefix: string; nickname?: string; humans: string[]; bots: string[] };
 export type SaveResult = { ok: boolean; message: string };
 
 const ID = /^\d{5,25}$/;
@@ -17,6 +17,8 @@ export async function saveSettings(input: SaveInput): Promise<SaveResult> {
   if (!ID.test(input.guildId)) return { ok: false, message: "Invalid server." };
   const prefix = String(input.prefix ?? "");
   if (prefix.length < 1 || prefix.length > 5 || /\s/.test(prefix)) return { ok: false, message: "Prefix must be 1-5 characters with no spaces." };
+  const nickname = String(input.nickname ?? "").trim();
+  if (nickname.length > 32) return { ok: false, message: "Nickname must be 32 characters or fewer." };
   const clean = (list: unknown) =>
     Array.isArray(list) ? Array.from(new Set(list.map(String))).filter((x) => ID.test(x)) : [];
   const humans = clean(input.humans);
@@ -31,6 +33,7 @@ export async function saveSettings(input: SaveInput): Promise<SaveResult> {
     if ((await countPendingJobs(session.id)) >= 3) return { ok: false, message: "You have too many unfinished changes. Wait a few seconds and try again." };
     const id = await createJob(input.guildId, session.id, "settings.save", {
       prefix,
+      nickname,
       autorole_humans: humans,
       autorole_bots: bots,
     });

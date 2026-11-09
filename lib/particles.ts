@@ -18,7 +18,7 @@ export function startParticles(canvas: HTMLCanvasElement): () => void {
     canvas.style.width = w + "px";
     canvas.style.height = h + "px";
     g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const n = Math.min(80, Math.floor((w * h) / 20000));
+    const n = Math.min(45, Math.floor((w * h) / 32000));
     pts = Array.from({ length: n }, () => ({
       x: Math.random() * w, y: Math.random() * h,
       vx: (Math.random() - 0.5) * 0.28, vy: (Math.random() - 0.5) * 0.28,

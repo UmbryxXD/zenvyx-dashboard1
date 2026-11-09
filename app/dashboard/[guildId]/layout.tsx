@@ -18,10 +18,10 @@ export default async function DashboardLayout({ children, params }: { children: 
   }
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-[88rem] flex-col md:flex-row">
+    <div className="mx-auto flex min-h-dvh max-w-[88rem] flex-col md:flex-row">
       <Sidebar guildId={params.guildId} guild={guild} user={{ id: session.id, name: session.name, avatar: session.avatar }} />
       <CommandPalette guildId={params.guildId} />
-      <main className="min-w-0 flex-1 px-4 pb-16 pt-4 md:px-10 md:pt-10">{children}</main>
+      <main className="min-w-0 flex-1 px-3 pb-24 pt-3 sm:px-4 md:px-10 md:pb-16 md:pt-10">{children}</main>
     </div>
   );
 }

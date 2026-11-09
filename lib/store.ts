@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { env } from "./env";
 
 export type Role = { id: string; name: string; color: string | null; position: number; assignable: boolean };
@@ -7,7 +8,7 @@ export type Overview = {
   guild: { id: string; name: string; icon: string | null; member_count: number; text_channels: number; voice_channels: number; categories: number; roles: number; boosts: number };
   bot: { latency_ms: number | null; started_at: number; guild_count: number; command_count: number; module_count: number };
   prefix: string | null;
-  settings?: { prefix: string | null; autorole: { humans: string[]; bots: string[] } };
+  settings?: { prefix: string | null; nickname?: string | null; autorole: { humans: string[]; bots: string[] } };
   roles?: Role[];
   channels?: Channel[];
   modules: { name: string; commands: number }[];
@@ -24,7 +25,10 @@ function headers(): Record<string, string> {
 }
 
 /** Latest snapshots the bot uploaded for these servers. A server with no row = bot not added (or not synced yet). */
-export async function getSnapshots(ids: string[]): Promise<Snapshot[]> {
+const snapshotsOnce = cache((joined: string) => fetchSnapshots(joined ? joined.split(",") : []));
+export const getSnapshots = (ids: string[]): Promise<Snapshot[]> => snapshotsOnce(ids.join(","));
+
+async function fetchSnapshots(ids: string[]): Promise<Snapshot[]> {
   const clean = ids.filter((id) => /^\d{5,25}$/.test(id));
   if (!clean.length) return [];
   const base = env("SUPABASE_URL").replace(/\/+$/, "");
@@ -126,4 +130,24 @@ export async function getData<T>(guildId: string, key: "tickets" | "staffapps" |
 export async function getAudit(guildId: string): Promise<AuditRow[]> {
   if (!/^\d{5,25}$/.test(guildId)) return [];
   return rest<AuditRow[]>("GET", `zx_audit?guild_id=eq.${guildId}&order=id.desc&limit=100&select=id,user_name,kind,summary,created_at`);
+}
+
+
+/** Per-user cache of the Discord server list, so we don't hit Discord on every page load. */
+export async function getUserGuilds(userId: string): Promise<{ guilds: unknown[]; fetchedAt: number } | null> {
+  try {
+    const rows = await rest<{ guilds: unknown[]; fetched_at: string }[]>("GET", `zx_users?user_id=eq.${encodeURIComponent(userId)}&select=guilds,fetched_at`);
+    if (!rows[0]) return null;
+    return { guilds: rows[0].guilds, fetchedAt: new Date(rows[0].fetched_at).getTime() };
+  } catch {
+    return null; // table missing or DB hiccup: caller falls back to Discord directly
+  }
+}
+
+export async function putUserGuilds(userId: string, guilds: unknown[]): Promise<void> {
+  try {
+    await rest("POST", "zx_users?on_conflict=user_id", { user_id: userId, guilds, fetched_at: new Date().toISOString() }, "resolution=merge-duplicates,return=minimal");
+  } catch {
+    /* cache is optional */
+  }
 }

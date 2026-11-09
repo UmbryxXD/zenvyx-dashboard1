@@ -8,7 +8,7 @@ export type JobResult = { ok: boolean; message: string };
 
 const KINDS = new Set([
   "tickets.config.save", "tickets.panel.save", "tickets.panel.delete", "tickets.panel.publish",
-  "staffapps.config.save", "appeals.config.save", "appeals.panel.publish",
+  "staffapps.config.save", "appeals.config.save", "appeals.panel.publish", "modules.toggle",
 ]);
 
 /** Queue one action for the bot. The bot validates the contents and re-checks permissions itself. */

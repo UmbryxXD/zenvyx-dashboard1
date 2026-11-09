@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { TEMPLATES } from "@/lib/templates";
 import type { Channel, Role, TicketsData } from "@/lib/store";
@@ -88,10 +89,10 @@ export function TicketsView({ guildId, data, channels, roles }: { guildId: strin
           <Section icon="plus" title="Create a panel" hint="Start from a template and tweak it. You can change everything.">
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {TEMPLATES.map((t) => (
-                <a key={t.id} href={`/dashboard/${guildId}/tickets/panels/new?template=${t.id}`}
+                <Link key={t.id} href={`/dashboard/${guildId}/tickets/panels/new?template=${t.id}`}
                    className="group rounded-xl border border-white/10 bg-white/[0.02] p-4 transition duration-200 hover:-translate-y-0.5 hover:border-violet-400/50 hover:bg-violet-500/10">
                   <p className="text-2xl">{t.emoji}</p><p className="mt-2 font-medium text-white">{t.name}</p><p className="text-xs text-zinc-500">{t.blurb}</p>
-                </a>))}
+                </Link>))}
             </div>
           </Section>
           {data.panels.length === 0 ? <div className="glass p-6"><Empty icon="ticket" title="No panels yet">Pick a template above to create your first one.</Empty></div> : (
@@ -107,7 +108,7 @@ export function TicketsView({ guildId, data, channels, roles }: { guildId: strin
                     <Badge>{p.config.type}</Badge><span>{p.config.options.length} button{p.config.options.length === 1 ? "" : "s"}</span><span>· updated {day(p.updated_at)}</span>
                   </div>
                   <div className="mt-4 flex gap-2">
-                    <a href={`/dashboard/${guildId}/tickets/panels/${encodeURIComponent(p.name)}`} className="btn btn-primary !px-4 !py-2"><Icon name="edit" className="h-4 w-4" /> Edit</a>
+                    <Link href={`/dashboard/${guildId}/tickets/panels/${encodeURIComponent(p.name)}`} className="btn btn-primary !px-4 !py-2"><Icon name="edit" className="h-4 w-4" /> Edit</Link>
                     <button type="button" onBlur={() => setConfirm(null)} disabled={del.pending}
                             onClick={async () => { if (confirm !== p.name) { setConfirm(p.name); return; } await del.run("tickets.panel.delete", { name: p.name }); setConfirm(null); }}
                             className={`btn !px-3 !py-2 ${confirm === p.name ? "bg-rose-600 text-white" : "btn-ghost !text-rose-300"}`}>

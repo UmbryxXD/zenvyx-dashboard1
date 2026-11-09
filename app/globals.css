@@ -17,7 +17,7 @@ body { background: #05030b; color: #e7e1f7; }
   /* ---------- backdrop ---------- */
   .fx { position: fixed; inset: 0; pointer-events: none; z-index: -1; }
   .aurora { overflow: hidden; }
-  .aurora i { position: absolute; border-radius: 50%; filter: blur(90px); will-change: transform; }
+  .aurora i { position: absolute; border-radius: 50%; }
   .aurora i:nth-child(1) { width: 60vmax; height: 60vmax; left: -18vmax; top: -28vmax; opacity: .5;
     background: radial-gradient(circle, #6d28d9, transparent 65%); animation: drift1 28s ease-in-out infinite alternate; }
   .aurora i:nth-child(2) { width: 50vmax; height: 50vmax; right: -20vmax; top: 8vh; opacity: .42;
@@ -32,15 +32,12 @@ body { background: #05030b; color: #e7e1f7; }
   }
   .cursor-glow { background: radial-gradient(520px circle at var(--cx, 50%) var(--cy, 25%), rgba(139, 92, 246, .14), transparent 60%); }
   .vignette { background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .6)); }
-  .grain { opacity: .07; mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
 
   /* ---------- surfaces ---------- */
   .glass {
     position: relative; border-radius: 1rem; border: 1px solid rgba(255, 255, 255, .08);
-    background: linear-gradient(180deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .02));
-    -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
-    box-shadow: 0 1px 0 rgba(255, 255, 255, .06) inset, 0 24px 60px -32px rgba(0, 0, 0, .9);
+    background: linear-gradient(180deg, rgba(30, 22, 52, .78), rgba(16, 11, 30, .82));
+    box-shadow: 0 1px 0 rgba(255, 255, 255, .05) inset;
   }
   /* cursor-following glow + border light (needs the Background component) */
   .spot { position: relative; isolation: isolate; overflow: hidden; }
@@ -86,7 +83,7 @@ body { background: #05030b; color: #e7e1f7; }
 .float { animation: float 6s ease-in-out infinite; }
 
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
-@keyframes pagein { from { opacity: 0; transform: translateY(8px) scale(.995); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes pagein { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes pop { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: scale(1); } }
 @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 @keyframes shine { to { background-position: 200% center; } }
@@ -103,3 +100,19 @@ body { background: #05030b; color: #e7e1f7; }
 
 .grow { transform-origin: bottom; animation: grow .9s cubic-bezier(.2, .8, .2, 1) both; }
 @keyframes grow { from { transform: scaleY(0); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
+
+/* ---------- phones / touch: no heavy effects, big tap targets ---------- */
+@media (max-width: 767px), (hover: none) {
+  .gridfx, .cursor-glow, .vignette, canvas.fx { display: none; }
+  .aurora i { animation: none !important; }
+  .aurora i:nth-child(3) { display: none; }
+  .spot::before, .spot::after, .glow-border::before { display: none; }
+  .text-gradient { animation: none; }
+  .btn-primary::after, .orbit { display: none; }
+  .rise, .page-in, .pop, .float { animation: none; }
+  .btn { min-height: 44px; }
+  input, select, textarea { font-size: 16px !important; } /* stops iOS zooming into fields */
+}
+html, body { overflow-x: hidden; }
+.min-h-dvh { min-height: 100vh; min-height: 100dvh; }
+.safe-b { padding-bottom: max(.75rem, env(safe-area-inset-bottom)); }

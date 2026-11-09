@@ -6,7 +6,7 @@ export function CountUp({ value, duration = 1000 }: { value: number; duration?: 
   const [shown, setShown] = useState(0);
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (window.matchMedia("(prefers-reduced-motion: reduce), (max-width: 767px)").matches) {
       setShown(value);
       return;
     }

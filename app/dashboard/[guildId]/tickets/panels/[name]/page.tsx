@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ErrorCard } from "@/components/ErrorCard";
 import { PageHeader } from "@/components/PageHeader";
 import { PanelEditor } from "@/components/PanelEditor";
@@ -13,7 +14,7 @@ export default async function Page({ params, searchParams }: { params: { guildId
   if (!f.ok) return f.view;
   const name = decodeURIComponent(params.name);
   const back = (
-    <a href={`/dashboard/${params.guildId}/tickets`} className="btn btn-ghost">← All panels</a>
+    <Link href={`/dashboard/${params.guildId}/tickets`} className="btn btn-ghost">← All panels</Link>
   );
 
   if (name === "new") {

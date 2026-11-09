@@ -39,13 +39,14 @@ export default async function Page({ params }: { params: { guildId: string } }) 
           <Icon name="sliders" className="h-6 w-6" />
         </span>
         <div>
-          <h1 className="font-display text-3xl font-bold tracking-tight"><span className="text-gradient">Server settings</span></h1>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight"><span className="text-gradient">Server settings</span></h1>
           <p className="mt-0.5 text-sm text-zinc-400">{data.guild.name} · changes reach the bot within a few seconds.</p>
         </div>
       </header>
       <SettingsForm
         guildId={params.guildId}
         prefix={data.settings.prefix || "?"}
+        nickname={data.settings.nickname || ""}
         humans={data.settings.autorole.humans}
         bots={data.settings.autorole.bots}
         roles={data.roles}
