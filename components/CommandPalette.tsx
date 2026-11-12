@@ -24,6 +24,8 @@ export function CommandPalette({ guildId }: { guildId: string }) {
     { label: "Staff applications", hint: "Questions, settings, history", href: `${base}/applications`, icon: "clipboard" },
     { label: "Moderation", hint: "Commands, AutoMod, role access, cases", href: `${base}/moderation`, icon: "shield" },
     { label: "AI", hint: "AI moderation, reports, learned channels", href: `${base}/ai`, icon: "sparkles" },
+    { label: "Music", hint: "Player, 24/7, join-to-create", href: `${base}/music`, icon: "music" },
+    { label: "Blox Fruits", hint: "Stock, trade calculator, values", href: `${base}/blox`, icon: "gem" },
     { label: "Appeals", hint: "Rules, panel, history", href: `${base}/appeals`, icon: "scale" },
     { label: "Change history", hint: "Who changed what", href: `${base}/activity`, icon: "history" },
     { label: "Switch server", hint: "Pick another server", href: "/servers", icon: "swap" },

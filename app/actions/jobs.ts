@@ -12,6 +12,8 @@ const KINDS = new Set([
   "moderation.command.toggle", "moderation.commands.bulk", "moderation.automod.master", "moderation.automod.option.save", "moderation.automod.rule.save", "moderation.automod.logging.save", "moderation.logs.save",
   "moderation.roleperm.add", "moderation.roleperm.save", "moderation.roleperm.remove",
   "ai.mod.save", "ai.mod.test", "ai.reports.save", "ai.reports.create", "ai.learn.add", "ai.learn.remove", "ai.learn.clear",
+  "music.player", "music.247", "music.jtc.setup", "music.jtc.off",
+  "blox.stock.save", "blox.stock.refresh",
 ]);
 
 /** Queue one action for the bot. The bot validates the contents and re-checks permissions itself. */

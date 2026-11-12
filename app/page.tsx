@@ -22,7 +22,7 @@ export default async function Home({ searchParams }: { searchParams: { error?: s
 
   return (
     <>
-    <div className="hero-bg fx" aria-hidden="true" />
+    <div className="hero-bg" aria-hidden="true" />
     <main className="relative mx-auto flex min-h-dvh max-w-xl flex-col items-center justify-center px-4 py-12 text-center">
       <div className="relative mb-8 flex h-44 w-44 items-center justify-center sm:h-52 sm:w-52">
         <span className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(124,58,237,.45),transparent_65%)]" aria-hidden="true" />

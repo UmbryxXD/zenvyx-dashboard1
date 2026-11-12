@@ -19,8 +19,8 @@ const ITEMS: Item[] = [
   { label: "Moderation", icon: "shield", href: "/moderation", live: true },
   { label: "AI", icon: "sparkles", href: "/ai", live: true },
 
-  { label: "Music", icon: "music", live: false },
-  { label: "Blox Fruits", icon: "gem", live: false },
+  { label: "Music", icon: "music", href: "/music", live: true },
+  { label: "Blox Fruits", icon: "gem", href: "/blox", live: true },
 ];
 
 export function Sidebar({ guildId, guild, user }: {

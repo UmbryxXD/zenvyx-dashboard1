@@ -148,9 +148,31 @@ export type AiData = {
   limits?: { channels: number | null; messages: number | null; per_channel: number | null };
 };
 
+export type MusicData = {
+  available: boolean;
+  nodes_online?: boolean;
+  voice_channels?: { id: string; name: string }[];
+  stay_247?: { channel_id: string; channel_name: string | null } | null;
+  jtc?: { trigger: { id: string; name: string } | null; category: { id: string; name: string } | null; panel_channel: { id: string; name: string } | null } | null;
+  player?: {
+    channel_id: string; channel_name: string; listeners: number; playing: boolean; paused: boolean; volume: number; loop: boolean; autoplay: boolean;
+    current: { title: string; author: string; length: number; position: number; uri: string | null } | null;
+    queue_length: number; queue: { title: string; author: string; length: number }[];
+  } | null;
+};
+
+export type BloxData = {
+  available: boolean;
+  stock_known?: boolean;
+  normal?: string[];
+  mirage?: string[];
+  config?: { channel_id: string | null; normal_enabled: boolean; mirage_enabled: boolean; normal_role_id: string | null; mirage_role_id: string | null };
+};
+export type BloxValues = { fruits: { name: string; value: number }[]; source: string; updated_by: string };
+
 export type AuditRow = { id: number; user_name: string | null; kind: string; summary: string | null; created_at: string };
 
-export async function getData<T>(guildId: string, key: "tickets" | "staffapps" | "appeals" | "moderation" | "ai"): Promise<{ data: T; updated_at: string } | null> {
+export async function getData<T>(guildId: string, key: "tickets" | "staffapps" | "appeals" | "moderation" | "ai" | "music" | "blox" | "blox_values"): Promise<{ data: T; updated_at: string } | null> {
   if (!/^\d{5,25}$/.test(guildId)) return null;
   const [row] = await rest<{ data: T; updated_at: string }[]>("GET", `zx_data?guild_id=eq.${guildId}&key=eq.${key}&select=data,updated_at`);
   return row ?? null;
@@ -179,4 +201,16 @@ export async function putUserGuilds(userId: string, guilds: unknown[]): Promise<
   } catch {
     /* cache is optional */
   }
+}
+
+/** Website-owned data (the bot never writes this key). Callers must have checked the user manages the guild. */
+export async function putData(guildId: string, key: "blox_values", data: unknown): Promise<void> {
+  if (!/^\d{5,25}$/.test(guildId)) throw new StoreError("Invalid server.");
+  await rest("POST", "zx_data?on_conflict=guild_id,key", { guild_id: guildId, key, data, updated_at: new Date().toISOString() }, "resolution=merge-duplicates,return=minimal");
+}
+
+export async function addAudit(guildId: string, userId: string, userName: string, kind: string, summary: string): Promise<void> {
+  try {
+    await rest("POST", "zx_audit", { guild_id: guildId, user_id: userId, user_name: userName, kind, summary }, "return=minimal");
+  } catch { /* history is best-effort */ }
 }
