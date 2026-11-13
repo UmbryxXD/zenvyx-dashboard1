@@ -14,6 +14,7 @@ const KINDS = new Set([
   "ai.mod.save", "ai.mod.test", "ai.reports.save", "ai.reports.create", "ai.learn.add", "ai.learn.remove", "ai.learn.clear",
   "music.player", "music.247", "music.jtc.setup", "music.jtc.off",
   "blox.stock.save", "blox.stock.refresh",
+  "embed.send", "welcome.save", "welcome.test", "welcome.reset",
 ]);
 
 /** Queue one action for the bot. The bot validates the contents and re-checks permissions itself. */

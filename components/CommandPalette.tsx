@@ -25,6 +25,8 @@ export function CommandPalette({ guildId }: { guildId: string }) {
     { label: "Moderation", hint: "Commands, AutoMod, role access, cases", href: `${base}/moderation`, icon: "shield" },
     { label: "AI", hint: "AI moderation, reports, learned channels", href: `${base}/ai`, icon: "sparkles" },
     { label: "Music", hint: "Player, 24/7, join-to-create", href: `${base}/music`, icon: "music" },
+    { label: "Welcomer", hint: "Greet new members", href: `${base}/welcome`, icon: "users" },
+    { label: "Embed builder", hint: "Send a custom embed", href: `${base}/embeds`, icon: "send" },
     { label: "Blox Fruits", hint: "Stock, trade calculator, values", href: `${base}/blox`, icon: "gem" },
     { label: "Appeals", hint: "Rules, panel, history", href: `${base}/appeals`, icon: "scale" },
     { label: "Change history", hint: "Who changed what", href: `${base}/activity`, icon: "history" },

@@ -7,24 +7,27 @@ import { Icon, type IconName } from "./Icon";
 import { Logo } from "./Logo";
 import { avatarUrl } from "@/lib/format";
 
-type Item = { label: string; icon: IconName; href?: string; live: boolean };
+type Item = { label: string; icon: IconName; href?: string; live: boolean; module?: string };
 const ITEMS: Item[] = [
   { label: "Overview", icon: "grid", href: "", live: true },
   { label: "Modules", icon: "puzzle", href: "/modules", live: true },
   { label: "Server settings", icon: "sliders", href: "/settings", live: true },
-  { label: "Tickets", icon: "ticket", href: "/tickets", live: true },
-  { label: "Staff applications", icon: "clipboard", href: "/applications", live: true },
-  { label: "Appeals", icon: "scale", href: "/appeals", live: true },
+  { label: "Tickets", module: "tickets", icon: "ticket", href: "/tickets", live: true },
+  { label: "Staff applications", module: "staffapps", icon: "clipboard", href: "/applications", live: true },
+  { label: "Appeals", module: "appeals", icon: "scale", href: "/appeals", live: true },
   { label: "Change history", icon: "history", href: "/activity", live: true },
-  { label: "Moderation", icon: "shield", href: "/moderation", live: true },
-  { label: "AI", icon: "sparkles", href: "/ai", live: true },
+  { label: "Moderation", module: "moderation", icon: "shield", href: "/moderation", live: true },
+  { label: "AI", module: "ai", icon: "sparkles", href: "/ai", live: true },
 
-  { label: "Music", icon: "music", href: "/music", live: true },
-  { label: "Blox Fruits", icon: "gem", href: "/blox", live: true },
+  { label: "Music", module: "music", icon: "music", href: "/music", live: true },
+  { label: "Welcomer", module: "welcome", icon: "users", href: "/welcome", live: true },
+  { label: "Embed builder", module: "embed", icon: "send", href: "/embeds", live: true },
+  { label: "Blox Fruits", module: "blox", icon: "gem", href: "/blox", live: true },
 ];
 
-export function Sidebar({ guildId, guild, user }: {
+export function Sidebar({ guildId, guild, user, off = [] }: {
   guildId: string;
+  off?: string[];
   guild: { name: string; icon: string | null } | null;
   user: { id: string; name: string; avatar: string | null };
 }) {
@@ -52,7 +55,7 @@ export function Sidebar({ guildId, guild, user }: {
             {active && <span className="absolute bottom-2 left-0 top-2 w-[3px] rounded-r bg-violet-400" />}
             <Icon name={item.icon} className={`h-[18px] w-[18px] shrink-0 ${active ? "text-violet-300" : ""}`} />
             <span className="flex-1">{item.label}</span>
-            {!item.live && <span className="rounded-md bg-white/5 px-1.5 py-0.5 text-[10px] uppercase tracking-wide">Soon</span>}
+            {item.module && off.includes(item.module) && <span className="rounded-md bg-white/5 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-zinc-500">Off</span>}
           </>
         );
         return item.live ? (

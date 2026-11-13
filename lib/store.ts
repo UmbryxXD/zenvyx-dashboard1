@@ -12,6 +12,7 @@ export type Overview = {
   roles?: Role[];
   channels?: Channel[];
   modules: { name: string; commands: number }[];
+  module_catalog?: ModuleInfo[];
 };
 export type Snapshot = { guild_id: string; updated_at: string; data: Overview };
 
@@ -161,6 +162,8 @@ export type MusicData = {
   } | null;
 };
 
+export type ModuleInfo = { id: string; name: string; description: string; icon: string; category: string; example: string; commands: number; enabled: boolean; owner_only: boolean };
+
 export type BloxData = {
   available: boolean;
   stock_known?: boolean;
@@ -168,11 +171,15 @@ export type BloxData = {
   mirage?: string[];
   config?: { channel_id: string | null; normal_enabled: boolean; mirage_enabled: boolean; normal_role_id: string | null; mirage_role_id: string | null };
 };
+export type WelcomeData = {
+  available: boolean; configured?: boolean; type?: "simple" | "embed"; channel_id?: string | null; message?: string; auto_delete?: number;
+  embed?: { message: string; title: string; description: string; footer_text: string; footer_icon: string; author_name: string; author_icon: string; thumbnail: string; image: string; color: number };
+};
 export type BloxValues = { fruits: { name: string; value: number }[]; source: string; updated_by: string };
 
 export type AuditRow = { id: number; user_name: string | null; kind: string; summary: string | null; created_at: string };
 
-export async function getData<T>(guildId: string, key: "tickets" | "staffapps" | "appeals" | "moderation" | "ai" | "music" | "blox" | "blox_values"): Promise<{ data: T; updated_at: string } | null> {
+export async function getData<T>(guildId: string, key: "tickets" | "staffapps" | "appeals" | "moderation" | "ai" | "music" | "blox" | "blox_values" | "welcome"): Promise<{ data: T; updated_at: string } | null> {
   if (!/^\d{5,25}$/.test(guildId)) return null;
   const [row] = await rest<{ data: T; updated_at: string }[]>("GET", `zx_data?guild_id=eq.${guildId}&key=eq.${key}&select=data,updated_at`);
   return row ?? null;
